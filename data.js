@@ -218,6 +218,10 @@ function addCom(txt, parrent_comment_id, t){
     displayCom(comment);
 }
 
+function clear_proposals(){
+    localStorage.clear();
+    window.location.reload(true);
+}
 
 function quad_v(){
     scores_v = []
@@ -227,8 +231,6 @@ function quad_v(){
         for (var arg of thread.comments){
             if (arg.id.length === 2){
                 arg_score_v(arg);
-
-                alert(arg.score)
     
                 if (arg.type === "support"){
                     score += arg.score;
@@ -244,7 +246,7 @@ function quad_v(){
     for (var n of scores_v){
         l += ' ' + n;
     }
-    alert(l);
+    alert(l)
 }
 
 function quad(){
@@ -270,7 +272,7 @@ function quad(){
     for (var n of scores){
         l += ' ' + n;
     }
-    alert(l);
+    alert(l)
 }
 
 function arg_score(arg){
@@ -323,8 +325,4 @@ function arg_score_v(arg){
     if (arg.type === "oppose" && arg.score < 0){
         arg.score = 0;
     }
-}
-
-function arg_frame(){
-    
 }
