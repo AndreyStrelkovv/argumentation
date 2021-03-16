@@ -1,0 +1,52 @@
+body {
+    margin: 10px 60px;
+}
+a {
+    text-decoration: none;
+    color: black;
+}
+h1, h4, ol {
+    margin: 0;
+}
+p {
+    margin: 5px 0;
+}
+.top-bar {
+    background-color: skyblue;
+    padding: 0 40px;
+}
+.main {
+    background-color: #F6F6EF;
+    padding: 10px 15px;
+}
+.row {
+    padding: 5px 0;
+}
+.bottom {
+    display: flex;
+    color: grey;
+    font-size: 12px;
+}
+.timestamp {
+    padding-right: 10px;
+}
+#proposal_arg {
+    width: 40%;
+    height: 80px;
+    display: block;
+    margin-top: 0px;
+}
+#proposal {
+    background-color: #F6F6EF;
+    padding: 10px 40px;
+    /* display: block; */
+}
+#add_button {
+    margin-top: 5px;
+}
+
+#decision_buttons{
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}

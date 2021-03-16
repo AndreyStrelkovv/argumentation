@@ -1,0 +1,58 @@
+<body>
+    <link rel="stylesheet" href="style/index.css">
+    <div class="top-bar">
+        <h1>
+            Proposals
+        </h1>
+    </div>
+    <div class="main">
+        <ol>
+            <!-- <textarea id="user"></textarea>
+            <button class="decision" onclick="get_user()">Get User</button> -->
+        </ol>
+    </div>
+    <!-- <script src="javascript.js"></script> -->
+    <!-- <script src="data.js"></script> -->
+    <script src="code/proposals.js"></script>
+    <script>
+
+        // nodemon index.js
+        // getData();
+        // test();
+        // console.log(threads);
+
+        // send_update_to_server();
+
+        // const options= {
+        //     method: 'Post',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(threads)
+        // };
+        // fetch('/api', options)
+        // .then(response => response.json())
+        // .then((threads) => {
+        //     console.log(threads)
+        // })
+        // console.log(json);
+        get_data();
+
+        display_proposals(threads);
+
+    </script>
+    <div id="functionality">
+
+        <div id = "proposal">
+            <textarea id="proposal_arg"></textarea>
+            <button id = "add_button" onclick="addProposal(document.getElementById('proposal_arg'))">add proposal</button>
+        </div>
+    
+        <div id="decision_buttons">
+            <button class="decision" onclick="quad_v()">QuaD-V</button>
+            <button class="decision" onclick="quad()">QuaD</button>
+            <button class="decision" onclick="arg_frame()">AF</button>
+            <button class="decision" onclick="clear_proposals()">Clear</button>
+        </div>
+    </div>
+</body>

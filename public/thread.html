@@ -1,0 +1,57 @@
+<body>
+    <link rel="stylesheet" href="style/thread.css">
+    <div class="top-bar">
+        <h1>
+            Discussion
+        </h1>
+    </div>
+    
+    <div class="main">
+        <div class="header">
+        </div>
+        <textarea id="arg"></textarea>
+        <div class="com">
+            <button class="oppose" type="button" onclick="
+                addCom(document.getElementById('arg'), -1,'oppose')">oppose</button>
+            <button class="support" type="button" onclick="
+                addCom(document.getElementById('arg'), -1,'support')">support</button>
+        </div>
+        <!-- <button onclick="addCom()">add comment</button> -->
+        <div class="comments">
+        </div>
+    </div>
+    <!-- <script src="data.js"></script> -->
+    <script src="code/arguments.js"></script>
+
+
+    <script>
+        var id = window.location.search.slice(1);
+        var thread = threads.find(t => t.id == id);
+        var header = document.querySelector('.header');
+        var headerHtml = `
+            <h4 class="title">
+                ${thread.title}
+            </h4>
+            <div class="bottom">
+                <p class="timestamp">
+                    ${thread.date}
+                </p>
+                <p class="comment-count">
+                    ${thread.comments.length} comments
+                </p>
+            </div>
+            <div>
+                ${thread.content}
+            </div>
+        `
+        header.insertAdjacentHTML('beforeend', headerHtml)
+
+        var comments = document.querySelector('.comments');
+        for (let comment of thread.comments) {
+            if(comment.id.length <= 2){
+                displayCom(comment)
+            }
+        }
+        display_comments(thread.comments)
+    </script>
+</body>
