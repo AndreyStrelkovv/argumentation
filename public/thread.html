@@ -25,33 +25,64 @@
 
 
     <script>
-        var id = window.location.search.slice(1);
-        var thread = threads.find(t => t.id == id);
+        // var id = window.location.search.slice(1);
         var header = document.querySelector('.header');
-        var headerHtml = `
-            <h4 class="title">
-                ${thread.title}
-            </h4>
-            <div class="bottom">
-                <p class="timestamp">
-                    ${thread.date}
-                </p>
-                <p class="comment-count">
-                    ${thread.comments.length} comments
-                </p>
-            </div>
-            <div>
-                ${thread.content}
-            </div>
-        `
-        header.insertAdjacentHTML('beforeend', headerHtml)
-
         var comments = document.querySelector('.comments');
-        for (let comment of thread.comments) {
-            if(comment.id.length <= 2){
-                displayCom(comment)
-            }
+
+        async function get_proposal(){
+            const response = await fetch('/api');
+            const data = await response.json();
+            const db_threads = data.data;
+
+            var id = window.location.search.slice(1);
+            var thread = db_threads.find(t => t.id == id);
+            // var header = document.querySelector('.header');
+            var headerHtml = `
+                <h4 class="title">
+                    ${thread.title}
+                </h4>
+                <div class="bottom">
+                    <p class="timestamp">
+                        ${thread.date}
+                    </p>
+                    <p class="comment-count">
+                        ${thread.comments.length} comments
+                    </p>
+                </div>
+                <div>
+                    ${thread.content}
+                </div>
+            `
+            header.insertAdjacentHTML('beforeend', headerHtml)
         }
-        display_comments(thread.comments)
+
+        get_proposal();
+
+        async function get_comments(){
+            const response = await fetch('/api');
+            const data = await response.json();
+            const db_threads = data.data;
+
+            var id = window.location.search.slice(1);
+            var thread = db_threads.find(t => t.id == id);
+            // console.log(thread);
+            for (let comment of thread.comments) {
+                if(comment.id.length <= 2){
+                    displayCom(comment);
+                }
+            }
+            console.log(thread);
+            display_comments(thread.comments, thread);
+        }
+
+        get_comments();
+
+        // var comments = document.querySelector('.comments');
+        // for (let comment of thread.comments) {
+        //     if(comment.id.length <= 2){
+        //         displayCom(comment)
+        //     }
+        // }
+        // display_comments(thread.comments)
     </script>
 </body>

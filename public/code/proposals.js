@@ -1,26 +1,3 @@
-let threads = []
-
-// console.log(threads);
-// function getData(){
-fetch('/api')
-.then(response => response.json())
-.then((proposals) =>{
-    localStorage.setItem('threads', JSON.stringify(proposals.data));
-    // threads = JSON.parse(JSON.stringify(proposals.data));
-    // console.log(proposals.data);
-    // return proposals.data;
-})
-
-if (localStorage && localStorage.getItem('threads')) {
-    threads = JSON.parse(localStorage.getItem('threads'));
-    // console.log(threads);
-} else {
-    localStorage.setItem('threads', JSON.stringify(threads));
-}
-
-// threads = JSON.parse(localStorage.getItem('threads'));
-
-
 function clear_proposals(){
     localStorage.clear();
     window.location.reload(true);
@@ -38,72 +15,58 @@ function clear_db(){
     fetch('/clear', options);
 }
 
-async function get_data() {
-    const response = await fetch('/api');
-    const data = await response.json();
-    // threads = data.data;
-    // for (var item of data.data){
-    //     threads.push(item);
-    // }
-    console.log(data.data);
-    // console.log(threads);
-    // threads = JSON.parse(JSON.stringify(data.data));
-    // console.log(threads);
-}
-// console.log(getData());
+async function addProposal(txt){
 
+    var thread = {
+        id: "",
+        title: "Proposal ",
+        type: "proposal",
+        date: 0,
+        content: txt.value,
+        comments: []
+    }
 
-async function send_update_to_server(){
     const options= {
         method: 'Post',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(threads)
+        body: JSON.stringify(thread)
     };
 
-    const response = await fetch('/api', options);
-    const json = await response.json();
-    // console.log(json);
-
-    // fetch('/api', options)
-    // .then(response => response.json())
-    // .then((proposals) => {
-    //     // console.log(proposals);
-    // })
-}
-
-function addProposal(txt){
-
-    var thread = {
-        id: "" + (threads.length + 1),
-        title: "Proposal " + (threads.length + 1),
-        type: "proposal",
-        date: 0,
-        content: txt.value,
-        support_list: [] ,
-        oppose_list: [] ,
-        comments: []
-    }
-
+    const response = await fetch('/proposal', options);
+    thread = await response.json();
+    // console.log("here")
+    console.log(thread);
     txt.value = '';
-    threads.push(thread)
-    send_update_to_server();
-    localStorage.setItem('threads', JSON.stringify(threads));
+    // threads.push(thread)
+    // localStorage.setItem('threads', JSON.stringify(threads));
     // window.location.reload(true)
 
     display_prop(thread)
 }
 
+async function display_proposals(){
+    const response = await fetch('/api');
+    const data = await response.json();
+    threads = data.data;
+    console.log(threads);
 
-function display_proposals(threads){
-    // alert("here")
-    // console.log(threads);
-    // alert(threads.length)
     for (let thread of threads) {
         display_prop(thread);
     }
+    // console.log(threads);
 }
+
+
+// function display_proposals(threads){
+//     // alert("here")
+//     // console.log(threads);
+//     // alert(threads.length)
+//     for (let thread of threads) {
+//         display_prop(thread);
+//     }
+// }
 
 
 function display_prop(thread){
@@ -119,9 +82,6 @@ function display_prop(thread){
                 <p class="timestamp">
                     ${new Date(thread.date).toLocaleString()}
                 </p>
-                <p class="comment-count">
-                    ${thread.comments.length} comments
-                </p>
             </div>
             <div>
                 ${thread.content}
@@ -132,7 +92,12 @@ function display_prop(thread){
     container.insertAdjacentHTML('beforeend', html);
 }
 
-function quad_v(){
+async function quad_v(){
+    const response = await fetch('/api');
+    const data = await response.json();
+    const threads = data.data;
+    // console.log(threads);
+
     scores_v = []
 
     for (var thread of threads){
@@ -158,7 +123,11 @@ function quad_v(){
     alert(l)
 }
 
-function quad(){
+async function quad(){
+    const response = await fetch('/api');
+    const data = await response.json();
+    const threads = data.data;
+
     scores = []
 
     for (var thread of threads){
