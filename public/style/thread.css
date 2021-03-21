@@ -37,6 +37,9 @@ button {
     background-color: skyblue;
     padding: 0 40px;
 }
+#go-back{
+    display: inline-block;
+}
 .main {
     background-color: #F6F6EF;
     padding: 10px 40px;

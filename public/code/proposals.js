@@ -92,6 +92,32 @@ function display_prop(thread){
     container.insertAdjacentHTML('beforeend', html);
 }
 
+function most_popular_proposal(thread){
+    var container = document.getElementById('functionality');
+    var html = `
+    <div class="row" id="prop">
+        <a href="thread.html?${thread.id}">
+            <h4 class="title">
+                ${thread.title}
+            </h4>
+            <div class="bottom">
+                <p class="timestamp">
+                    ${new Date(thread.date).toLocaleString()}
+                </p>
+            </div>
+            <div>
+                ${thread.content}
+            </div>
+        </a>
+    </div>
+    `
+    if(document.getElementById('prop') != null){
+        document.getElementById('prop').remove()
+    }
+    
+    container.insertAdjacentHTML('beforeend', html)
+}
+
 async function quad_v(){
     const response = await fetch('/api');
     const data = await response.json();
@@ -99,6 +125,8 @@ async function quad_v(){
     // console.log(threads);
 
     scores_v = []
+    var greatest_score = null;
+    var greatest_proposal = null;
 
     for (var thread of threads){
         var score = 0;
@@ -113,14 +141,21 @@ async function quad_v(){
                 }
             }
         }
-        scores_v.push(score);
+        scores_v.push([score, thread]);
+
+        if(greatest_score < score || greatest_score == null){
+            greatest_score = score;
+            greatest_proposal = thread;
+        }
     }
 
-    var l = '';
-    for (var n of scores_v){
-        l += ' ' + n;
-    }
-    alert(l)
+    most_popular_proposal(thread);
+
+    // var l = '';
+    // for (var n of scores_v){
+    //     l += ' ' + n;
+    // }
+    // alert(l)
 }
 
 async function quad(){
