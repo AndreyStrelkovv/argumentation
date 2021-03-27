@@ -1,0 +1,27 @@
+.log-in {
+    width: 200px;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+
+    border-style: solid;
+    border-radius: 0.5cm;
+    border-color: #87ceeb;
+    padding: 5px 5px 5px 5px;
+}
+.log-in-details {
+    margin: 0 auto;
+    margin-bottom: 5px;
+    display: flex;
+}
+.sign-up{
+    text-align: center;
+}
+#enter {
+    margin: 0 auto;
+    display: flex;
+    background-color: #87ceeb;
+    border-radius: 1em;
+}

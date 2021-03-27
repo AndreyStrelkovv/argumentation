@@ -10,9 +10,14 @@ h1, h4, ol {
 }
 p {
     margin: 5px 0;
+    width: 100%;
+    overflow-wrap: break-word;
+}
+.content{
+    width: 300px;
 }
 .top-bar {
-    background-color: skyblue;
+    background-color: #87ceeb;
     padding: 0 40px;
 }
 .main {
@@ -49,4 +54,29 @@ p {
     margin-top: 10px;
     display: flex;
     justify-content: center;
+}
+#results{
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+.most_popular_proposal{
+    width: auto;
+    height: auto;
+    margin-left: 10px;
+    background-color: #87ceeb;
+    padding: 10px 50px 10px 50px;
+    border-radius: 1em;
+    /* border: .25em solid transparent; */
+}
+.left {
+  float: left;
+}
+  
+.right {
+  float: right;
+}
+.full_width{
+    /* width: 100%; */
+    overflow:auto;
 }

@@ -10,7 +10,12 @@ h1, h4, ol {
 }
 p {
     margin: 5px 0;
+    /* width: 100%; */
+    overflow-wrap: break-word;
 }
+/* .content{
+    width: 50%;
+} */
 /* textarea {
     width: 80%;
     height: 80px;

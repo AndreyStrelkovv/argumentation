@@ -48,19 +48,19 @@ app.post('/clear', (request, response)=> {
    response.json({info: 'cleared'});
 })
 
- app.post('/api', (request, response)=> {
-   //  console.log(request.body);
-    const data = request.body;
-   //  console.log(data[0])
+//  app.post('/api', (request, response)=> {
+//    //  console.log(request.body);
+//     const data = request.body;
+//    //  console.log(data[0])
 
-    db.remove({type: "proposal"}, {multi:true}, function(err, numRemoved){
+//     db.remove({type: "proposal"}, {multi:true}, function(err, numRemoved){
 
-    })
+//     })
 
-    db.insert(data);
-    db.loadDatabase();
-    response.json(request.body);
- })
+//     db.insert(data);
+//     db.loadDatabase();
+//     response.json(request.body);
+//  })
 
  app.post('/proposal', (request, response) =>{
    db.find({}, (err, data) => {
@@ -90,12 +90,14 @@ app.post('/clear', (request, response)=> {
    })
  })
 
- app.post('/update_proposal', (request, response) =>{
 
+ app.post('/update_proposal', (request, response) =>{
    if(request.body[2].action == "comment"){
       response.json(add_comment(request));
    } else if (request.body[2].action == "vote"){
       response.json(vote(request));
+   } else if (request.body[2].action == "vote_proposal"){
+      response.json(vote_proposal(request));
    }
 })
 
@@ -153,6 +155,25 @@ function vote(request){
    //  response.json(thread);
 }
 
+function vote_proposal(request){
+   const thread = request.body[0];
+   const thread_id = '' + request.body[1].thread_id;
+
+   // db.find({ id : thread_id }, (err, data) => {
+   //    if (err) {
+   //       response.json({test: "err"});
+   //       return;
+   //    }
+   //    data.score += 1;
+   //    console.log(data);
+   // });
+   var new_score = thread.score + 1;
+
+   db.update({ id : thread_id }, { $set: {score : new_score} }, {}, function(err, data) {
+      console.log(data);
+   })
+   return thread;
+}
 
 function find_comment(thread, comment_id, depth){
    for (let comment of thread.comments){

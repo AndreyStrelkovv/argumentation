@@ -1,6 +1,6 @@
 <body>
     <link rel="stylesheet" href="style/thread.css">
-    <button><a href="index.html">Back to Proposals</a></button>
+    <button><a href="discussion.html">Back to Proposals</a></button>
     <div class="top-bar">
         <h1>
             Discussion
@@ -22,7 +22,7 @@
         </div>
     </div>
     <!-- <script src="data.js"></script> -->
-    <script src="code/arguments.js"></script>
+    <script src="code/thread.js"></script>
 
 
     <script>
@@ -50,8 +50,10 @@
                         ${thread.comments.length} comments
                     </p>
                 </div>
-                <div>
-                    ${thread.content}
+                <div class="content">
+                    <p>
+                        ${thread.content}
+                    </p>
                 </div>
             `
             header.insertAdjacentHTML('beforeend', headerHtml)
