@@ -107,7 +107,7 @@ function create_proposal(thread, framework){
                     ${framework}
                 </h4>
                 <div class="bottom">
-                    <p class="timestamp" id="score_proposal_${thread._id}_${framework}">
+                    <p class="scores" id="score_proposal_${thread._id}_${framework}">
                         score : ${thread.score}
                     </p>
                 </div>
@@ -133,8 +133,14 @@ function create_proposal(thread, framework){
                     ${thread.title}
                 </h4>
                 <div class="bottom">
-                    <p class="timestamp" id="score_proposal_${thread._id}">
+                    <p class="scores" id="score_proposal_${thread._id}">
                         score : ${thread.score}
+                    </p>
+                    <p class="scores" id="quad_proposal_${thread._id}">
+                        quad : 0
+                    </p>
+                    <p class="scores" id="quad_v_proposal_${thread._id}">
+                        quad-v : 0
                     </p>
                 </div>
             </div>
@@ -204,7 +210,8 @@ function attach_scores(scores_list, framework){
     for (let pair of scores_list){
         score = pair[0];
         thread = pair[1];
-        document.getElementById('score_proposal_' + thread._id).textContent += `; ${framework} : ${score}`;
+        document.getElementById(`${framework}_proposal_${thread._id}`).textContent = `${framework} : ${score}`
+        // document.getElementById('score_proposal_' + thread._id).textContent += `; ${framework} : ${score}`;
     }
 }
 
@@ -246,8 +253,9 @@ async function quad_v(){
     // alert(greatest_score)
     // alert(l)
     attach_scores(scores_list, 'quad_v');
-    most_popular_proposal(greatest_proposal, 'quad_v');
-
+    if (greatest_proposal){
+        most_popular_proposal(greatest_proposal, 'quad_v');
+    }
 }
 
 async function quad(){
@@ -283,7 +291,9 @@ async function quad(){
     // }
     // alert(l)
     attach_scores(scores_list, 'quad');
-    most_popular_proposal(greatest_proposal, 'quad');
+    if (greatest_proposal){
+        most_popular_proposal(greatest_proposal, 'quad');
+    }
 
 }
 

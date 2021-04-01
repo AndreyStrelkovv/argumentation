@@ -32,8 +32,9 @@ p {
     color: grey;
     font-size: 12px;
 }
-.timestamp {
-    padding-right: 10px;
+.scores {
+    width: 58px;
+    padding-right: 0px;
 }
 #proposal_arg {
     width: 40%;
