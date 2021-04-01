@@ -27,16 +27,29 @@
 
     <script>
         // var id = window.location.search.slice(1);
-        var header = document.querySelector('.header');
         var comments = document.querySelector('.comments');
+        
 
         async function get_proposal(){
-            const response = await fetch('/api');
-            const data = await response.json();
-            const db_threads = data.data;
+            // var thread_id = JSON.parse(localStorage.getItem("thread_id"));
+            // var id = thread_id._id;
 
             var id = window.location.search.slice(1);
-            var thread = db_threads.find(t => t.id == id);
+
+            const options= {
+                method: 'Post',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({thread_id : id})
+            };
+
+            const response = await fetch('/get_proposal', options);
+            var thread = await response.json();
+
+            console.log(thread);
+            // var thread = db_threads.find(t => t._id == id);
+            var header = document.querySelector('.header');
             // var header = document.querySelector('.header');
             var headerHtml = `
                 <h4 class="title">
@@ -62,30 +75,35 @@
         get_proposal();
 
         async function get_comments(){
-            const response = await fetch('/api');
-            const data = await response.json();
-            const db_threads = data.data;
+            // const response = await fetch('/api');
+            // const data = await response.json();
+            // const db_threads = data.data;
+
+            // var thread_id = JSON.parse(localStorage.getItem("thread_id"));
+            // var id = thread_id._id;
 
             var id = window.location.search.slice(1);
-            var thread = db_threads.find(t => t.id == id);
-            // console.log(thread);
+
+            const options= {
+                method: 'Post',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({thread_id : id})
+            };
+
+            const response = await fetch('/get_proposal', options);
+            var thread = await response.json();
+
+            // alert(id);
+            // var thread = db_threads.find(t => t._id == id);
             for (let comment of thread.comments) {
-                if(comment.id.length <= 2){
-                    displayCom(comment);
-                }
+                displayCom(comment, thread);
             }
-            console.log(thread);
+            // console.log(thread);
             display_comments(thread.comments, thread);
         }
 
         get_comments();
-
-        // var comments = document.querySelector('.comments');
-        // for (let comment of thread.comments) {
-        //     if(comment.id.length <= 2){
-        //         displayCom(comment)
-        //     }
-        // }
-        // display_comments(thread.comments)
     </script>
 </body>

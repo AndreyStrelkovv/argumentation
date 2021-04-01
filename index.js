@@ -10,11 +10,6 @@ app.listen(port, () => {
   console.log(`Starting server at ${port}`);
 });
 
-// const port = process.env.PORT;
-// app.listen(port, () => {
-//   console.log(`Starting server at ${port}`);
-// });
-
 // setInterval(() => {
 //   http.get(`http://${process.env.PROJECT_DOMAIN}.glitch.me/`);
 // }, 280000);
@@ -24,13 +19,46 @@ app.listen(port, () => {
  app.use(express.json({limit: '1mb'}));
 
 //  app.listen(3000, () => console.log('listening at 3000'));
- app.use(express.static('public'));
- app.use(express.json({limit: '1mb'}));
 
 const db = new Datastore('database.db');
 db.loadDatabase();
 
-app.get('/api', (request, response)=> {
+const db_users = new Datastore('database_users.db');
+db_users.loadDatabase();
+
+
+app.post('/login_user', (request, response) =>{
+   
+   username = request.body.name;
+   password = request.body.pw;
+
+   db_users.find({ name : username }, (err, data) => {
+      if (err) {
+         response.json({test: "err"});
+         return;
+      }
+
+      if (data.length > 0){
+         user = data[0];
+         if (password == user.pw){
+            response.json([data[0], {result: "login"}]);
+         } else {
+            response.json([data[0], {result: "wrong_password"}]);
+         }
+      } else if(data.length == 0) {
+         db_users.insert(request.body);
+         response.json([request.body, {result: "new_user"}]);
+      } else {
+         response.json([request.body, {result: "user_not_found"}]);
+      }
+   })
+ })
+
+
+
+// Proposal Database Methods
+
+app.get('/api', (request, response) => {
    db.find({}, (err, data) => {
       if (err) {
          response.json({test: "err"});
@@ -48,20 +76,6 @@ app.post('/clear', (request, response)=> {
    response.json({info: 'cleared'});
 })
 
-//  app.post('/api', (request, response)=> {
-//    //  console.log(request.body);
-//     const data = request.body;
-//    //  console.log(data[0])
-
-//     db.remove({type: "proposal"}, {multi:true}, function(err, numRemoved){
-
-//     })
-
-//     db.insert(data);
-//     db.loadDatabase();
-//     response.json(request.body);
-//  })
-
  app.post('/proposal', (request, response) =>{
    db.find({}, (err, data) => {
       if (err) {
@@ -69,24 +83,25 @@ app.post('/clear', (request, response)=> {
          return;
       }
       const thread = request.body;
-      thread.id = "" + (data.length + 1);
+      thread._id = "" + (data.length + 1);
       thread.title += (data.length + 1);
-      // console.log(thread);
-      db.insert(thread);
-      // response.json(request.body);
 
+      db.insert(thread);
 
       response.json(thread);
    })
  })
 
- app.get('/proposal', (request, response) =>{
-   db.find({}, (err, data) => {
+ app.post('/get_proposal', (request, response) =>{
+   
+   thread_id = request.body.thread_id;
+
+   db.find({_id : thread_id }, (err, data) => {
       if (err) {
          response.json({test: "err"});
          return;
       }
-      response.json(thread);
+      response.json(data[0]);
    })
  })
 
@@ -101,42 +116,32 @@ app.post('/clear', (request, response)=> {
    }
 })
 
- function add_comment(request){
+function add_comment(request){
    const thread = request.body[0];
    const comment = request.body[1];
    const parent_comment_id = comment.parent_id;
-   // console.log(thread);
-   // console.log(comment);
 
-   var parent_comment;
-    for(var com of thread.comments){
-        if(com.id == parent_comment_id){
-            parent_comment = com;
-        }
-    }
-
-   var parent_comment_intree = find_comment(thread, ""+parent_comment_id, 2);
-   // console.log(parent_comment_intree);
-
+   var parent_comment_intree = find_comment(thread, ""+parent_comment_id, thread._id.length + 1);
+   // console.log(parent_comment_id);
    var new_comment_id;
-   if(parent_comment == null){
-           new_comment_id = "" + thread.id + (thread.comments.length + 1);
+   if(parent_comment_intree == null){
+           new_comment_id = "" + thread._id + (thread.comments.length + 1);
    } else {
-           new_comment_id = "" + parent_comment.id + (parent_comment.comments.length + 1);
+           new_comment_id = "" + parent_comment_intree._id + (parent_comment_intree.comments.length + 1);
    }
-   comment.id = new_comment_id;
+   comment._id = new_comment_id;
 
    db.remove({_id: thread._id}, {}, function(err, numRemoved){})
 
-   if(parent_comment != null && parent_comment_intree.comments != null){
-      // parent_comment.comments.push(comment);
+   if(parent_comment_intree != null && parent_comment_intree.comments != null){
+      // console.log(parent_comment_intree);
       parent_comment_intree.comments.push(comment);
+   } else {
+      thread.comments.push(comment);
    }
-   thread.comments.push(comment);
 
    db.insert(thread);
    return [thread, comment];
-   // response.json([thread, comment]);
  }
 
 function vote(request){
@@ -144,42 +149,36 @@ function vote(request){
    const comment_id = "" + request.body[1].com_id;
    const diff = request.body[3].diff
 
-   var comment_intree = find_comment(thread, comment_id, 2);
-   comment_intree.score += diff;
-
-   // console.log(thread.comments);
+   var comment_intree = find_comment(thread, comment_id, thread._id.length + 1);
+   
+   if(diff > 0){
+      comment_intree.upvote += diff;
+   } else {
+      comment_intree.downvote += Math.abs(diff);
+   }
+   
+   comment_intree.score = comment_intree.upvote - comment_intree.downvote;
 
    db.remove({_id: thread._id}, {}, function(err, numRemoved){})
    db.insert(thread);
    return thread;
-   //  response.json(thread);
 }
 
 function vote_proposal(request){
    const thread = request.body[0];
    const thread_id = '' + request.body[1].thread_id;
-
-   // db.find({ id : thread_id }, (err, data) => {
-   //    if (err) {
-   //       response.json({test: "err"});
-   //       return;
-   //    }
-   //    data.score += 1;
-   //    console.log(data);
-   // });
    var new_score = thread.score + 1;
 
-   db.update({ id : thread_id }, { $set: {score : new_score} }, {}, function(err, data) {
-      console.log(data);
+   db.update({ _id : thread_id }, { $set: {score : new_score} }, {}, function(err, data) {
+      // console.log(data);
    })
    return thread;
 }
 
 function find_comment(thread, comment_id, depth){
    for (let comment of thread.comments){
-      if(comment.id == comment_id.slice(0, depth)){
+      if(comment._id == comment_id.slice(0, depth)){
          if(comment_id.length == depth){
-            // console.log(comment);
             return comment;
          } else {
             return find_comment(comment, comment_id, depth+1);

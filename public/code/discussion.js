@@ -18,14 +18,14 @@ function clear_db(){
 async function addProposal(txt){
 
     var thread = {
-        id: "",
+        _id: "",
         title: "Proposal ",
         type: "proposal",
         score: 0,
         date: 0,
         content: txt.value,
         comments: []
-    }
+    };
 
     const options= {
         method: 'Post',
@@ -59,22 +59,13 @@ async function display_proposals(){
     // console.log(threads);
 }
 
-
-// function display_proposals(threads){
-//     // alert("here")
-//     // console.log(threads);
-//     // alert(threads.length)
-//     for (let thread of threads) {
-//         display_prop(thread);
-//     }
-// }
 async function vote_proposal(id){
     const response = await fetch('/api');
     const data = await response.json();
     const threads = data.data;
 
     for (let thread of threads){
-        if (thread.id == id){
+        if (thread._id == id){
 
             const options= {
                 method: 'Post',
@@ -87,44 +78,20 @@ async function vote_proposal(id){
             const response_2 = await fetch('/update_proposal', options);
             const last_response = await response_2.json();
 
-            document.getElementById("score_proposal_" + id).innerHTML = "score: " + (thread.score + 1);
+            if( document.getElementById("score_proposal_" + id + "_" + "quad")){
+                document.getElementById("score_proposal_" + id + "_" + "quad").innerHTML = "score: " + (thread.score + 1);
+            }
+
+            if(document.getElementById("score_proposal_" + id + "_" + "quad_v")){
+                document.getElementById("score_proposal_" + id + "_" + "quad_v").innerHTML = "score: " + (thread.score + 1);
+            }
+
+            document.getElementById("score_proposal_" + thread._id).innerHTML = "score: " + (thread.score + 1);
+
             break;
         }
     }
 
-}
-
-function display_page(){
-    // document.getElementById("log_in").remove();
-
-    var container_top_page = document.getElementById("top_page");
-    var container_functionality = document.getElementById("functionality");
-    // alert(container_functionality);
-    html_top_page = `
-    <div class="top-bar">
-        <h1>
-            Proposals
-        </h1>
-    </div>
-    <div class="main">
-        <ol>
-
-        </ol>
-    </div>`
-
-    html_functionality = `
-    <div id = "proposal">
-        <textarea id="proposal_arg"></textarea>
-        <button id = "add_button" onclick="addProposal(document.getElementById('proposal_arg'))">add proposal</button>
-    </div>
-
-    <div id="decision_buttons">
-        <button class="decision" onclick="eval()">Evaluate</button>
-        <button class="decision" onclick="clear_proposals()">Clear</button>
-    </div>`
-
-    container_top_page.innerHTML = html_top_page;
-    container_functionality.innerHTML = html_functionality;
 }
 
 function create_proposal(thread, framework){
@@ -140,13 +107,14 @@ function create_proposal(thread, framework){
                     ${framework}
                 </h4>
                 <div class="bottom">
-                    <p class="timestamp" id="score_proposal_${thread.id}_${framework}">
+                    <p class="timestamp" id="score_proposal_${thread._id}_${framework}">
                         score : ${thread.score}
                     </p>
                 </div>
             </div>
             <div class="right">
-                <button onclick="vote_proposal(${thread.id})">Vote</button>
+                <button class="view" onclick="view_proposal(${thread._id})">View</button>
+                <button onclick="vote_proposal(${thread._id})">Vote</button>
             </div>
         </div>
         <div class="content">
@@ -156,35 +124,55 @@ function create_proposal(thread, framework){
         </div>
         `
     } else {
+        // <a href="thread.html?${thread.id}">
+        // </a>
         html = `
-        <a href="thread.html?${thread.id}">
-            <h4 class="title">
-                ${thread.title}
-            </h4>
-            <div class="bottom">
-                <p class="timestamp">
-                    ${new Date(thread.date).toLocaleString()}
-                </p>
+        <div class="full_width">
+            <div class="left">
+                <h4 class="title">
+                    ${thread.title}
+                </h4>
+                <div class="bottom">
+                    <p class="timestamp" id="score_proposal_${thread._id}">
+                        score : ${thread.score}
+                    </p>
+                </div>
             </div>
-            <div class="content">
-                <p>
-                    ${thread.content}
-                </p>
+            <div class="right">
+                <button class="view" onclick="view_proposal(${thread._id})">View</button>
+                <button onclick="vote_proposal(${thread._id})">Vote</button>
             </div>
-        </a>
+        </div>
+        <div class="content">
+            <p>
+                ${thread.content}
+            </p>
+        </div>
         `
     }
 
     return html;
 }
 
+function view_proposal(thread_id){
+
+    var thread_id_json = {
+        id: thread_id
+    };
+
+    // alert(thread_id_json);
+
+    localStorage.setItem('thread_id', JSON.stringify(thread_id_json));
+    window.location.href = `thread.html?${thread_id}`;
+}
+
 function display_prop(thread){
     
-    var container = document.querySelector('ol');
+    var container = document.getElementById('list_of_proposals');
     var html = `
-    <li class="row">
+    <div class="row">
         ${create_proposal(thread, null)}
-    </li>
+    </div>
     `
     container.insertAdjacentHTML('beforeend', html);
 }
@@ -212,30 +200,38 @@ function eval(){
     quad();
 }
 
+function attach_scores(scores_list, framework){
+    for (let pair of scores_list){
+        score = pair[0];
+        thread = pair[1];
+        document.getElementById('score_proposal_' + thread._id).textContent += `; ${framework} : ${score}`;
+    }
+}
+
 async function quad_v(){
     const response = await fetch('/api');
     const data = await response.json();
     const threads = data.data;
     // console.log(threads);
 
-    scores_v = []
+    scores_list = []
     var greatest_score = null;
     var greatest_proposal = null;
 
     for (var thread of threads){
         var score = 0;
         for (var arg of thread.comments){
-            if (arg.id.length === 2){
-                arg_score_v(arg);
-    
-                if (arg.type === "support"){
-                    score += arg.score;
-                } else {
-                    score -= arg.score;
-                }
+            arg_score_v(arg);
+
+            if (arg.type === "support"){
+                score += arg.score;
+            } else {
+                score -= arg.score;
             }
         }
-        scores_v.push([score, thread]);
+        scores_list.push([score, thread]);
+
+        // alert(greatest_score);
 
         if(greatest_score < score || greatest_score == null){
             greatest_score = score;
@@ -249,6 +245,7 @@ async function quad_v(){
     // }
     // alert(greatest_score)
     // alert(l)
+    attach_scores(scores_list, 'quad_v');
     most_popular_proposal(greatest_proposal, 'quad_v');
 
 }
@@ -258,24 +255,22 @@ async function quad(){
     const data = await response.json();
     const threads = data.data;
 
-    scores = []
+    scores_list = []
     var greatest_score = null;
     var greatest_proposal = null;
 
     for (var thread of threads){
         var base_score = 0;
         for (var arg of thread.comments){
-            if (arg.id.length === 2){
-                arg_score(arg);
-    
-                if (arg.type === "support"){
-                    base_score += arg.base_score;
-                } else {
-                    base_score -= arg.base_score;
-                }
+            arg_score(arg);
+
+            if (arg.type === "support"){
+                base_score += arg.base_score;
+            } else {
+                base_score -= arg.base_score;
             }
         }
-        // scores.push(score);
+        scores_list.push([base_score, thread]);
         if(greatest_score < base_score || greatest_score == null){
             greatest_score = base_score;
             greatest_proposal = thread;
@@ -287,6 +282,7 @@ async function quad(){
     //     l += ' ' + n;
     // }
     // alert(l)
+    attach_scores(scores_list, 'quad');
     most_popular_proposal(greatest_proposal, 'quad');
 
 }
