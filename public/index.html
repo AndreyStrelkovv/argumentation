@@ -1,14 +1,39 @@
 <body>
-    <link rel="stylesheet" href="style/login.css">
-    <script src="code/login.js"></script>
+    <link rel="stylesheet" href="style/index.css">
+    <script src="code/discussion.js"></script>
 
+    <div class="top-page" id="top_page">
+        <div class="top-bar">
+            <h1>
+                Your Best Plan To Reduce Poverty
+            </h1>
+        </div>
+        <div class="main">
+      
 
-    <div class="log-in" id="log_in">
-        <h2 class="sign-up">Sign In</h2>
-        <textarea class="log-in-details" id="username" placeholder="Username ..."></textarea>
-        <p id="username_info"></p>
-        <textarea class="log-in-details" id="password" placeholder="Password ..."></textarea>
-        <p id="password_info"></p>
-        <button id="enter" onclick="try_login()">Log In</button>
+            <div id="list_of_proposals">
+
+            </div>
+        </div>
     </div>
+
+    
+    <div id="functionality">
+        <div id = "proposal">
+            <textarea id="proposal_arg"></textarea>
+            <button id = "add_button" onclick="addProposal(document.getElementById('proposal_arg'))">add proposal</button>
+        </div>
+    
+        <div id="decision_buttons">
+            <button class="decision" onclick="clear_proposals()">Clear</button>
+        </div>
+    </div>
+
+    <div id = "results">
+    </div>
+
+    <script>
+        display_proposals();
+        eval();
+    </script>
 </body>

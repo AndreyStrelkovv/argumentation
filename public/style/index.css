@@ -11,9 +11,13 @@ h1, h4, ol {
 p {
     margin: 5px 0;
     width: 100%;
+    color:black;
     overflow-wrap: break-word;
 }
 .content{
+    width: 80%;
+}
+.content_result{
     width: 300px;
 }
 .top-bar {
